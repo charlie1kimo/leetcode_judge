@@ -23,6 +23,65 @@ For k = 3, you should return: 3->2->1->4->5
 class Solution(object):
     """
     Idea:
+        - run the linked-list only once, reverse as it goes.
+        - O(n)
+        - use a sentinel (dummy node)
+    """
+    def reverseKGroup(self, head, k):
+        """
+        :type head: ListNode
+        :type k: int
+        :rtype: ListNode
+        """
+        if head == None or head.next == None:
+            return head
+
+        if k == 1:
+            return head
+
+        # sentinel node
+        dummy = ListNode(-1)
+        dummy.next = head
+
+        prev = dummy
+        curr = head
+        while curr != None:
+            new_head = prev.next
+            group = k
+            while new_head != None and group > 0:
+                group -= 1
+                new_head = new_head.next
+
+            # end of the list
+            if group > 0:
+                break
+
+            # note curr.next
+            while curr.next != new_head:
+                nt = curr.next.next
+                # reversing curr & curr.next
+                curr.next.next = prev.next
+                prev.next = curr.next
+                # linking the list back
+                curr.next = nt
+                # prev
+                #   x    curr   x
+                #   x     x     x   nt
+            prev = curr
+            curr = curr.next
+
+        return dummy.next
+
+
+# Definition for singly-linked list.
+# class ListNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution(object):
+    """
+    Idea:
         - can reduce the problem to reverse a singly-linked list
         - reverse a singly-linked list with 3 pointers:
             1) 1->2->3->4->5        prev, curr, next
@@ -31,6 +90,9 @@ class Solution(object):
             4) 1<-2<-3<-4  5
             5) 1<-2<-3<-4<-5
         - get k for tail from curr, then reverse. If nodes # < k no changes.
+
+    Notes:
+        - O(n + n % k) solution, which is not fast enough for the first try
     """
     def reverseKGroup(self, head, k):
         """

@@ -4,16 +4,48 @@ You may assume that the maximum length of S is 1000, and there exists one unique
 """
 import re
 
+
 class Solution:
     """
-    Using Manacher's algorithm.
-    Run time: O(n)
-    http://articles.leetcode.com/2011/11/longest-palindromic-substring-part-i.html
-    http://articles.leetcode.com/2011/11/longest-palindromic-substring-part-ii.html
+    (1) Using Manacher's algorithm.
+        - Run time: O(n), Space: O(n)
+            http://articles.leetcode.com/2011/11/longest-palindromic-substring-part-i.html
+            http://articles.leetcode.com/2011/11/longest-palindromic-substring-part-ii.html
+    (2) odd-even extend palindrome.
+        - Run time: O(n^2)
     """
-    # @param {string} s
-    # @return {string}
     def longestPalindrome(self, s):
+        """
+        :type s: str
+        :rtype: str
+        """
+        l = len(s)
+        if l < 2:
+            return s
+
+        self.low = 0
+        self.max_len = 0
+        for i in xrange(l - 1):
+            # odd length
+            self.extendPalindrome(s, i, i)
+            # even length
+            self.extendPalindrome(s, i, i + 1)
+
+        return s[self.low:self.low + self.max_len]
+
+    def extendPalindrome(self, s, j, k):
+        while j >= 0 and k < len(s) and s[j] == s[k]:
+            j -= 1
+            k += 1
+
+        # count the length, start_ind = j+1, end_ind = k-1
+        if self.max_len < (k - 1) - (j + 1) + 1:
+            self.low = j + 1
+            self.max_len = (k - 1) - (j + 1) + 1
+
+    def longestPalindrome_manacher(self, s):
+        # @param {string} s
+        # @return {string}
         string = self.preprocess(s)
         center = 0
         right = 0
